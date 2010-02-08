@@ -9,6 +9,10 @@
 		<servlet-class>net.purevirtual.fullrss.RSSFullViewServlet</servlet-class>
 	</servlet>
 	<servlet>
+		<servlet-name>AtomFullViewServlet</servlet-name>
+		<servlet-class>net.purevirtual.fullrss.AtomFullViewServlet</servlet-class>
+	</servlet>
+	<servlet>
 		<servlet-name>WicketServlet</servlet-name>
 		<servlet-class>org.apache.wicket.protocol.http.WicketServlet</servlet-class>
 		<init-param>
@@ -20,6 +24,10 @@
 	<servlet-mapping>
 		<servlet-name>RSSFullViewServlet</servlet-name>
 		<url-pattern>/rss/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>AtomFullViewServlet</servlet-name>
+		<url-pattern>/atom/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>WicketServlet</servlet-name>

@@ -15,7 +15,7 @@ import javax.servlet.http.*;
 import net.purevirtual.fullrss.entity.Feed;
 import net.purevirtual.fullrss.facade.FeedFacade;
 
-public class RSSFullViewServlet extends HttpServlet {
+public class AtomFullViewServlet extends HttpServlet {
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -31,20 +31,20 @@ public class RSSFullViewServlet extends HttpServlet {
 			response.setCharacterEncoding("utf-8");
 			Calendar now = Calendar.getInstance();
 			now.add(Calendar.HOUR, -1);
-			if (!f.getCachedRSSAt().before(now.getTime())) {
-				response.getOutputStream().write(f.getCachedRSS());
+			if (!f.getCachedAtomAt().before(now.getTime())) {
+				response.getOutputStream().write(f.getCachedAtom());
 			} else {
 				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 				SyndFeed full = new FeedFacade().getFull(f);
-				full.setFeedType("rss_2.0");
+				full.setFeedType("atom_1.0");
 				full.setEncoding("utf-8");
-				//full.setFeedType("atom_1.0");
+				
 				new SyndFeedOutput().output(full, new OutputStreamWriter(byteArrayOutputStream, "utf-8"));
 				EntityManager em = EMF.get().createEntityManager();
 				EntityTransaction transaction = em.getTransaction();
 				transaction.begin();
-				f.setCachedRSS(byteArrayOutputStream.toByteArray());
-				f.setCachedRSSAt(new Date());
+				f.setCachedAtom(byteArrayOutputStream.toByteArray());
+				f.setCachedAtomAt(new Date());
 				em.merge(f);
 				transaction.commit();
 				response.getOutputStream().write(byteArrayOutputStream.toByteArray());
@@ -53,9 +53,9 @@ public class RSSFullViewServlet extends HttpServlet {
 			
 			
 		} catch (IllegalArgumentException ex) {
-			Logger.getLogger(RSSFullViewServlet.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(AtomFullViewServlet.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (FeedException ex) {
-			Logger.getLogger(RSSFullViewServlet.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(AtomFullViewServlet.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 }

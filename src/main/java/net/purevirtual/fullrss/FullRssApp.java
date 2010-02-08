@@ -1,6 +1,7 @@
 package net.purevirtual.fullrss;
 
 import java.util.Enumeration;
+import net.purevirtual.fullrss.facade.FeedFacade;
 import net.purevirtual.fullrss.pages.Hello;
 import org.apache.wicket.protocol.http.HttpSessionStore;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -28,6 +29,7 @@ public class FullRssApp extends WebApplication {
 			System.setProperty("wicket.configuration", DEPLOYMENT);
 		}
 		getResourceSettings().setResourcePollFrequency(null);
+		new FeedFacade().addDefaultFeeds();
 	}
 
 	@Override
@@ -42,4 +44,5 @@ public class FullRssApp extends WebApplication {
 			System.err.println(attributeName + " = " + this.getServletContext().getAttribute(attributeName));
 		}
 	}
+	
 }

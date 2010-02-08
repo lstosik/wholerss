@@ -1,5 +1,6 @@
 package net.purevirtual.fullrss.entity;
 
+import com.google.appengine.api.datastore.Blob;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,7 +9,11 @@ import javax.persistence.Id;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Link;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import javax.persistence.Basic;
+import javax.persistence.Embedded;
 import javax.persistence.Enumerated;
 
 @Entity
@@ -16,23 +21,36 @@ public class Feed {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Key id;
+	private Long id;
 	private String name;
 	private Link url;
+	@Basic
 	private List<String> contentInclude;
+	@Basic
 	private List<String> contentExclude;
 	@Enumerated
 	private RuleType contentRuleType;
 
+	private Blob cachedRSS;
+	private Date cachedRSSAt;
+	private Blob cachedAtom;
+	private Date cachedAtomAt;
+
 	public Feed() {
 		this.contentExclude = new ArrayList<String>();
 		this.contentInclude = new ArrayList<String>();
+		this.cachedAtomAt = new Date();
+		this.cachedAtomAt.setTime(0);
+		this.cachedRSSAt = new Date();
+		this.cachedRSSAt.setTime(0);
 	}
-	/**
-	 * @return the id
-	 */
-	public Key getId() {
+
+	public Long getId() {
 		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	/**
@@ -107,15 +125,41 @@ public class Feed {
 
 	
 
-	public enum RuleType {
+	public byte[] getCachedRSS() {
+		return cachedRSS.getBytes();
+	}
 
-		CSS, XPath, JS, XSLT;
+	public void setCachedRSS(byte[] cachedRSS) {
+		this.cachedRSS = new Blob(cachedRSS);
+	}
+
+	public Date getCachedRSSAt() {
+		return cachedRSSAt;
+	}
+
+	public void setCachedRSSAt(Date cachedRSSAt) {
+		this.cachedRSSAt = cachedRSSAt;
+	}
+
+	public byte[] getCachedAtom() {
+		return cachedAtom.getBytes();
+	}
+
+	public void setCachedAtom(byte[] cachedAtom) {
+		this.cachedAtom = new Blob(cachedAtom);
+	}
+
+	public Date getCachedAtomAt() {
+		return cachedAtomAt;
+	}
+
+	public void setCachedAtomAt(Date cachedAtomAt) {
+		this.cachedAtomAt = cachedAtomAt;
 	}
 
 	
-	/*public Feed(URL url, String content) {
-	this.url = url.toString();
-	setContent(content);
-	fetchedAt = Calendar.getInstance().getTime();
-	}*/
+
+	public enum RuleType {
+		CSS, XPath, JS, XSLT;
+	}
 }
