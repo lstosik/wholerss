@@ -1,5 +1,6 @@
 package net.purevirtual.fullrss.facade;
 
+import com.google.inject.Inject;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -8,33 +9,32 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.io.SyndFeedInput;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.persistence.EntityManager;
-import net.purevirtual.fullrss.EMF;
+import net.purevirtual.fullrss.dao.FeedDao;
 import net.purevirtual.fullrss.entity.Feed;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.xml.sax.InputSource;
 
 public class FeedFacade {
 
+	@Inject
+	FeedDao feedDao;
+	@Inject
+	UrlFacade urlFacade;
 	public SyndFeed getFull(Feed f) {
 		assert (f != null);
 		try {
-			
+
 			SyndFeedInput input = new SyndFeedInput();
-			SyndFeed source = new UrlFacade().fetchFeed(new URL(f.getUrl()));
+			SyndFeed source = urlFacade.fetchFeed(new URL(f.getUrl()));
 			SyndFeed feed = new SyndFeedImpl();
 			feed.setTitle(source.getTitle());
 			feed.setLink(source.getLink());
@@ -92,7 +92,7 @@ public class FeedFacade {
 		try {
 			byte[] content;
 			try {
-				content = new UrlFacade().fetch(url);
+				content = urlFacade.fetch(url);
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
@@ -129,14 +129,8 @@ public class FeedFacade {
 		f.setContentExclude(exclude);
 		f.setUrl("http://finanse.wp.pl/rss.xml");
 		f.setId(1L);
-		EntityManager em = EMF.get().createEntityManager();
-		try {
-			em.persist(f);
-		} catch (Exception ex) {
-			Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
-		} finally {
-			em.close();
-		}
+		feedDao.persist(f);
+
 		f = new Feed();
 		f.setContentRuleType(Feed.RuleType.CSS);
 		exclude = new ArrayList();
@@ -146,24 +140,18 @@ public class FeedFacade {
 		f.setContentExclude(exclude);
 		f.setUrl("http://feeds.feedburner.com/Explosm");
 		f.setId(2L);
-		em = EMF.get().createEntityManager();
-		try {
-			em.persist(f);
-		} catch (Exception ex) {
-			Logger.getAnonymousLogger().log(Level.SEVERE, null, ex);
-		} finally {
-			em.close();
-		}
-	}
+		feedDao.persist(f);
 
-	public Feed getFeedById(Long feedId) {
-		EntityManager em = EMF.get().createEntityManager();
-		Feed result = null;
-		try {
-			 result = em.find(Feed.class, feedId);
-		} finally {
-			em.close();
-		}
-		return result;
+		f = new Feed();
+		f.setContentRuleType(Feed.RuleType.CSS);
+		exclude = new ArrayList();
+		include = new ArrayList();
+		include.add("img[src^=http://buttersafe.com/comics/]");
+		f.setContentInclude(include);
+		f.setContentExclude(exclude);
+		f.setUrl("http://feeds.feedburner.com/Buttersafe");
+		f.setId(3L);
+		feedDao.persist(f);
+
 	}
 }

@@ -16,7 +16,6 @@ import java.util.Date;
 public class FetchUrlCache {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private String url;
 	private Blob content;
 	private Date fetchedAt;

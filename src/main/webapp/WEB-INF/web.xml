@@ -4,22 +4,33 @@
 		 xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 		 version="2.5">
-	<servlet>
-		<servlet-name>RSSFullViewServlet</servlet-name>
-		<servlet-class>net.purevirtual.fullrss.RSSFullViewServlet</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>AtomFullViewServlet</servlet-name>
-		<servlet-class>net.purevirtual.fullrss.AtomFullViewServlet</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>WicketServlet</servlet-name>
-		<servlet-class>org.apache.wicket.protocol.http.WicketServlet</servlet-class>
+	<filter>
+		<filter-name>FullRssAppFilter</filter-name>
+		<filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
 		<init-param>
 			<param-name>applicationClassName</param-name>
 			<param-value>net.purevirtual.fullrss.FullRssApp</param-value>
 		</init-param>
-		<load-on-startup>1</load-on-startup>
+	</filter>
+	<filter-mapping>
+		<filter-name>FullRssAppFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<servlet>
+		<servlet-name>RSSFullViewServlet</servlet-name>
+		<servlet-class>net.purevirtual.fullrss.RSSFullViewServlet</servlet-class>
+		<init-param>
+			<param-name>filterName</param-name>
+			<param-value>FullRssAppFilter</param-value>
+		</init-param>
+	</servlet>
+	<servlet>
+		<servlet-name>AtomFullViewServlet</servlet-name>
+		<servlet-class>net.purevirtual.fullrss.AtomFullViewServlet</servlet-class>
+		<init-param>
+			<param-name>filterName</param-name>
+			<param-value>FullRssAppFilter</param-value>
+		</init-param>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>RSSFullViewServlet</servlet-name>
@@ -28,9 +39,5 @@
 	<servlet-mapping>
 		<servlet-name>AtomFullViewServlet</servlet-name>
 		<url-pattern>/atom/*</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>WicketServlet</servlet-name>
-		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 </web-app>
